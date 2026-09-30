@@ -1,9 +1,4 @@
-import { prisma } from "./db";
-import { categoryFromMcc, type CategoryId } from "./categories";
-import { resolveMerchant } from "./merchants";
-import { routePayment } from "./router";
-import { getMonthlySpendMap } from "./payments";
-import { ensureProxyCard } from "./proxy";
+import { authorizePayment } from "./payments";
 
 export type ProxyAuthInput = {
   userId: string;
@@ -17,138 +12,46 @@ export type ProxyAuthInput = {
 };
 
 export async function authorizeProxyCharge(input: ProxyAuthInput) {
-  const proxy = await ensureProxyCard(input.userId);
-
-  if (proxy.status !== "active") {
-    const declined = await prisma.transaction.create({
-      data: {
-        userId: input.userId,
-        amountCents: input.amountCents,
-        merchant: input.merchant,
-        category: input.category ?? resolveMerchant(input.merchant).category,
-        mcc: input.mcc,
-        isOnline: input.isOnline ?? true,
-        status: "declined",
-        routingReason: `Proxy ${proxy.status}`,
-        routingDetail: "{}",
-        declinedReason: `Proxy card is ${proxy.status}`,
-        proxyUsed: true,
-        idempotencyKey: input.idempotencyKey,
-      },
-    });
-    return {
-      approved: false,
-      proxy: {
-        last4: proxy.virtualLast4,
-        walletStatus: proxy.walletStatus,
-        status: proxy.status,
-      },
-      transaction: declined,
-      selectedCard: null,
-      reason: `Proxy card is ${proxy.status}`,
-    };
-  }
-
-  const resolved = resolveMerchant(input.merchant);
-  const category = (input.category ?? resolved.category ?? categoryFromMcc(input.mcc)) as CategoryId;
-  const isOnline = input.isOnline ?? resolved.isOnline;
-
-  const [cards, rules, monthlySpend] = await Promise.all([
-    prisma.card.findMany({ where: { userId: input.userId }, include: { rewards: true } }),
-    prisma.rule.findMany({ where: { userId: input.userId } }),
-    getMonthlySpendMap(input.userId),
-  ]);
-
-  const decision = routePayment(cards, rules, {
+  const result = await authorizePayment({
+    userId: input.userId,
     amountCents: input.amountCents,
-    merchant: resolved.merchant,
-    category,
-    mcc: input.mcc ?? resolved.mcc,
-    isOnline,
-    monthlySpendByCardCategory: monthlySpend,
+    merchant: input.merchant,
+    category: input.category,
+    mcc: input.mcc,
+    isOnline: input.isOnline,
+    autoSettle: input.autoSettle,
+    idempotencyKey: input.idempotencyKey,
   });
 
-  if (!decision.selectedCard) {
-    const declined = await prisma.transaction.create({
-      data: {
-        userId: input.userId,
-        amountCents: input.amountCents,
-        merchant: resolved.merchant,
-        category,
-        mcc: input.mcc ?? resolved.mcc,
-        isOnline,
-        status: "declined",
-        routingReason: decision.reason,
-        routingDetail: JSON.stringify(decision.detail),
-        declinedReason: decision.declinedReason,
-        proxyUsed: true,
-        idempotencyKey: input.idempotencyKey,
-      },
-    });
-    return {
-      approved: false,
-      proxy: {
-        last4: proxy.virtualLast4,
-        walletStatus: proxy.walletStatus,
-        status: proxy.status,
-      },
-      transaction: declined,
-      selectedCard: null,
-      reason: decision.reason,
-      decision,
-    };
+  const card = result.decision.selectedCard;
+  const approved = Boolean(card) && result.transaction?.status !== "declined";
+
+  if (!result.transaction) {
+    throw Object.assign(new Error("Authorization produced no transaction"), { status: 500 });
   }
 
-  const card = decision.selectedCard;
-  const amount = input.amountCents / 100;
-  const status = input.autoSettle ? "settled" : "authorized";
-  const settledAt = input.autoSettle ? new Date() : null;
-
-  const [tx] = await prisma.$transaction([
-    prisma.transaction.create({
-      data: {
-        userId: input.userId,
-        cardId: card.id,
-        amountCents: input.amountCents,
-        merchant: resolved.merchant,
-        category,
-        mcc: input.mcc ?? resolved.mcc,
-        isOnline,
-        status,
-        routingReason: decision.reason,
-        routingDetail: JSON.stringify(decision.detail),
-        rewardsEarned: decision.rewardsEarned,
-        multiplierUsed: decision.multiplierUsed,
-        proxyUsed: true,
-        idempotencyKey: input.idempotencyKey,
-        settledAt,
-      },
-    }),
-    prisma.card.update({
-      where: { id: card.id },
-      data: { currentBalance: { increment: amount } },
-    }),
-  ]);
-
   return {
-    approved: true,
+    approved,
     proxy: {
-      last4: proxy.virtualLast4,
-      walletStatus: proxy.walletStatus,
-      status: proxy.status,
-      label: proxy.label,
+      last4: result.proxy.virtualLast4,
+      walletStatus: result.proxy.walletStatus ?? "none",
+      status: result.proxy.status,
+      label: result.proxy.label,
     },
-    transaction: tx,
-    selectedCard: {
-      id: card.id,
-      nickname: card.nickname,
-      brand: card.brand,
-      last4: card.last4,
-      color: card.color,
-    },
-    reason: decision.reason,
-    rewardsEarned: decision.rewardsEarned,
-    multiplierUsed: decision.multiplierUsed,
-    decision,
+    transaction: result.transaction,
+    selectedCard: card
+      ? {
+          id: card.id,
+          nickname: card.nickname,
+          brand: card.brand,
+          last4: card.last4,
+          color: card.color,
+        }
+      : null,
+    reason: result.decision.reason,
+    rewardsEarned: result.decision.rewardsEarned,
+    multiplierUsed: result.decision.multiplierUsed,
+    decision: result.decision,
+    replayed: result.replayed,
   };
 }

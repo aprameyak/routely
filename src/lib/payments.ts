@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import { Prisma } from "@prisma/client";
 import { prisma } from "./db";
 import { categoryFromMcc, type CategoryId } from "./categories";
+import { resolveMerchant } from "./merchants";
 import { routePayment, type RouteDecision } from "./router";
 import { ensureProxyCard } from "./cards";
 export type PayInput = {
@@ -33,6 +34,7 @@ export type PayResult = {
         status: string;
         virtualLast4: string;
         label: string;
+        walletStatus?: string;
     };
     replayed?: boolean;
 };
@@ -169,7 +171,19 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
     }
     try {
         const proxy = await ensureProxyCard(input.userId);
-        const category = (input.category ?? categoryFromMcc(input.mcc)) as CategoryId;
+        const resolved = resolveMerchant(input.merchant);
+        const category = (input.category ??
+            resolved.category ??
+            categoryFromMcc(input.mcc ?? resolved.mcc)) as CategoryId;
+        const merchant = resolved.merchant;
+        const mcc = input.mcc ?? resolved.mcc;
+        const isOnline = input.isOnline ?? resolved.isOnline;
+        const proxyView = {
+            status: proxy.status,
+            virtualLast4: proxy.virtualLast4,
+            label: proxy.label,
+            walletStatus: proxy.walletStatus,
+        };
         if (proxy.status !== "active" && !input.dryRun) {
             const decision: RouteDecision = {
                 selectedCard: null,
@@ -183,10 +197,10 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
                 data: {
                     userId: input.userId,
                     amountCents: input.amountCents,
-                    merchant: input.merchant,
+                    merchant,
                     category,
-                    mcc: input.mcc,
-                    isOnline: input.isOnline ?? true,
+                    mcc,
+                    isOnline,
                     status: "declined",
                     routingReason: decision.reason,
                     routingDetail: JSON.stringify(decision.detail),
@@ -198,7 +212,7 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
             const result: PayResult = {
                 decision,
                 transaction: toTxView(tx),
-                proxy: { status: proxy.status, virtualLast4: proxy.virtualLast4, label: proxy.label },
+                proxy: proxyView,
             };
             if (claimedKey)
                 await completeIdempotent(input.userId, claimedKey, result);
@@ -214,16 +228,16 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
         ]);
         const decision = routePayment(cards, rules, {
             amountCents: input.amountCents,
-            merchant: input.merchant,
+            merchant,
             category,
-            mcc: input.mcc,
-            isOnline: input.isOnline ?? true,
+            mcc,
+            isOnline,
             monthlySpendByCardCategory: monthlySpend,
         });
         if (input.dryRun) {
             return {
                 decision,
-                proxy: { status: proxy.status, virtualLast4: proxy.virtualLast4, label: proxy.label },
+                proxy: proxyView,
             };
         }
         if (!decision.selectedCard) {
@@ -231,10 +245,10 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
                 data: {
                     userId: input.userId,
                     amountCents: input.amountCents,
-                    merchant: input.merchant,
+                    merchant,
                     category,
-                    mcc: input.mcc,
-                    isOnline: input.isOnline ?? true,
+                    mcc,
+                    isOnline,
                     status: "declined",
                     routingReason: decision.reason,
                     routingDetail: JSON.stringify(decision.detail),
@@ -246,7 +260,7 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
             const result: PayResult = {
                 decision,
                 transaction: toTxView(tx),
-                proxy: { status: proxy.status, virtualLast4: proxy.virtualLast4, label: proxy.label },
+                proxy: proxyView,
             };
             if (claimedKey)
                 await completeIdempotent(input.userId, claimedKey, result);
@@ -262,10 +276,10 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
                     userId: input.userId,
                     cardId: card.id,
                     amountCents: input.amountCents,
-                    merchant: input.merchant,
+                    merchant,
                     category,
-                    mcc: input.mcc,
-                    isOnline: input.isOnline ?? true,
+                    mcc,
+                    isOnline,
                     status,
                     routingReason: decision.reason,
                     routingDetail: JSON.stringify(decision.detail),
@@ -284,7 +298,7 @@ export async function authorizePayment(input: PayInput): Promise<PayResult> {
         const result: PayResult = {
             decision,
             transaction: toTxView(tx, card.nickname),
-            proxy: { status: proxy.status, virtualLast4: proxy.virtualLast4, label: proxy.label },
+            proxy: proxyView,
         };
         if (claimedKey)
             await completeIdempotent(input.userId, claimedKey, result);
