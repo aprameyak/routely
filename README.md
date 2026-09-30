@@ -1,30 +1,29 @@
 # Routely
 
-Stop guessing which credit card to use.
+Stop guessing which credit card to use at checkout.
 
-At the register (or checkout tab), open Routely, type the merchant, and get the exact card to pull — based on your rewards and custom rules.
+## What problem this solves
 
-## The real problem
+You hold multiple cards with different bonuses. Every purchase is a decision. Routely removes that tax:
 
-You have 3–6 cards with different category bonuses. Every purchase is a tiny decision tax. Routely removes it.
+1. Open Routely on your phone (add to Home Screen)
+2. Tap a category or type the store
+3. Pull the card it names
 
-## How to use it
-
-1. Add your cards + reward rates (`My cards`)
-2. Optionally add rules (“always Amex for dining”)
-3. Open **Which card?** → type merchant → pull that card
+It does **not** replace your physical cards with a bank-issued proxy (that needs an issuing partner). It solves the real everyday problem: **knowing which card to pull**.
 
 ## Quick start
 
 ```bash
 cp .env.example .env
-openssl rand -hex 32
 npm install
 npm run db:setup
 npm run dev
 ```
 
-http://localhost:3000 — demo: `demo@routely.app` / `DemoPass123!`
+Demo: `demo@routely.app` / `DemoPass123!`
+
+Deep link example: `/decide?merchant=Shell` or `/decide?category=dining`
 
 ## Docker
 
@@ -33,7 +32,3 @@ export ENCRYPTION_KEY=$(openssl rand -hex 32)
 export AUTH_SECRET=$(openssl rand -hex 32)
 docker compose up --build
 ```
-
-## Stack
-
-Next.js · Prisma · AES-256-GCM vault · bcrypt sessions · merchant catalog · rewards router

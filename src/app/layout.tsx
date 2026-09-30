@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Sora } from "next/font/google";
 import "./globals.css";
 const sora = Sora({
@@ -12,8 +12,29 @@ const ibm = IBM_Plex_Mono({
     weight: ["400", "500"],
 });
 export const metadata: Metadata = {
-    title: "Routely — Intelligent card routing",
-    description: "One proxy card. Every purchase automatically charged to the card that maximizes your rewards.",
+    title: "Routely — Which card should I use?",
+    description: "At the register, open Routely and get the exact credit card to pull for maximum rewards.",
+    applicationName: "Routely",
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "black-translucent",
+        title: "Routely",
+    },
+    icons: {
+        icon: [
+            { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+            { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+        ],
+        apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+    },
+};
+export const viewport: Viewport = {
+    themeColor: "#0f766e",
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
 };
 export default function RootLayout({ children }: LayoutProps<"/">) {
     return (<html lang="en" className={`${sora.variable} ${ibm.variable} h-full antialiased`}>
