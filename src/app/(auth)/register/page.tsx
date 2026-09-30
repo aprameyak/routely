@@ -28,7 +28,7 @@ export default function RegisterPage() {
                 }) => i.message).join(", ") : "Failed"));
             return;
         }
-        router.push("/decide");
+        router.push("/wallet");
         router.refresh();
     }
     return (<div className="min-h-screen grid-noise flex items-center justify-center px-4 py-12">

@@ -12,8 +12,8 @@ const ibm = IBM_Plex_Mono({
     weight: ["400", "500"],
 });
 export const metadata: Metadata = {
-    title: "Routely — Which card should I use?",
-    description: "At the register, open Routely and get the exact credit card to pull for maximum rewards.",
+    title: "Routely — One proxy card",
+    description: "Pay with one Routely card. Every charge routes to the funding card that maximizes your rewards.",
     applicationName: "Routely",
     manifest: "/manifest.webmanifest",
     appleWebApp: {

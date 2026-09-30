@@ -23,6 +23,8 @@ async function main() {
     }
     console.log("Seeding Routely demo data…");
     await prisma.auditLog.deleteMany();
+    await prisma.decision.deleteMany();
+    await prisma.idempotencyKey.deleteMany();
     await prisma.transaction.deleteMany();
     await prisma.rule.deleteMany();
     await prisma.rewardRate.deleteMany();
@@ -170,15 +172,30 @@ async function main() {
         ],
     });
     const proxyEnc = encrypt(`proxy_${user.id}_seed`);
+    const pan = "4000000000009012";
+    const panEnc = encrypt(pan);
+    const cvcEnc = encrypt("123");
     await prisma.proxyCard.create({
         data: {
             userId: user.id,
+            label: "Routely",
+            network: "visa",
             virtualLast4: "9012",
             virtualPrefix: "4000 00",
+            expMonth: 12,
+            expYear: new Date().getFullYear() + 4,
+            issuerProvider: "simulated",
+            panCipher: panEnc.cipher,
+            panIv: panEnc.iv,
+            panTag: panEnc.tag,
+            cvcCipher: cvcEnc.cipher,
+            cvcIv: cvcEnc.iv,
+            cvcTag: cvcEnc.tag,
             credentialCipher: proxyEnc.cipher,
             credentialIv: proxyEnc.iv,
             credentialTag: proxyEnc.tag,
             status: "active",
+            walletStatus: "none",
         },
     });
     await prisma.transaction.createMany({

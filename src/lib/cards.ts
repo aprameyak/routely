@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { createPaymentToken, encrypt, generateVirtualLast4 } from "./crypto";
+import { createPaymentToken, encrypt } from "./crypto";
 import type { z } from "zod";
 import type { cardSchema } from "./validators";
 import { CARD_COLORS } from "./categories";
@@ -102,29 +102,7 @@ export async function deleteCard(userId: string, cardId: string) {
     await prisma.card.delete({ where: { id: cardId } });
     return true;
 }
-export async function ensureProxyCard(userId: string) {
-    const existing = await prisma.proxyCard.findUnique({ where: { userId } });
-    if (existing)
-        return existing;
-    const secret = `proxy_${userId}_${crypto.randomUUID()}`;
-    const enc = encrypt(secret);
-    return prisma.proxyCard.create({
-        data: {
-            userId,
-            virtualLast4: generateVirtualLast4(),
-            credentialCipher: enc.cipher,
-            credentialIv: enc.iv,
-            credentialTag: enc.tag,
-        },
-    });
-}
-export async function setProxyStatus(userId: string, status: "active" | "frozen" | "revoked") {
-    await ensureProxyCard(userId);
-    return prisma.proxyCard.update({
-        where: { userId },
-        data: { status },
-    });
-}
+export { ensureProxyCard, setProxyStatus } from "./proxy";
 export function sanitizeCard<T extends {
     tokenCipher?: string;
     tokenIv?: string;

@@ -1,8 +1,8 @@
 {
   "name": "Routely",
   "short_name": "Routely",
-  "description": "Which credit card should I use right now?",
-  "start_url": "/decide",
+  "description": "One proxy card. Every charge routes to the best rewards card.",
+  "start_url": "/wallet",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
