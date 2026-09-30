@@ -51,10 +51,10 @@ export default async function DashboardPage() {
         description="Routely picks the right plastic for every scenario so you don’t have to."
         action={
           <Link
-            href="/pay"
+            href="/decide"
             className="rounded-2xl bg-teal px-4 py-2.5 text-sm font-semibold text-ink hover:bg-mist transition"
           >
-            Simulate a purchase
+            Which card?
           </Link>
         }
       />

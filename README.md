@@ -1,6 +1,18 @@
 # Routely
 
-Intelligent credit-card proxy that picks the right card for every purchase.
+Stop guessing which credit card to use.
+
+At the register (or checkout tab), open Routely, type the merchant, and get the exact card to pull — based on your rewards and custom rules.
+
+## The real problem
+
+You have 3–6 cards with different category bonuses. Every purchase is a tiny decision tax. Routely removes it.
+
+## How to use it
+
+1. Add your cards + reward rates (`My cards`)
+2. Optionally add rules (“always Amex for dining”)
+3. Open **Which card?** → type merchant → pull that card
 
 ## Quick start
 
@@ -12,16 +24,9 @@ npm run db:setup
 npm run dev
 ```
 
-Open http://localhost:3000
+http://localhost:3000 — demo: `demo@routely.app` / `DemoPass123!`
 
-Local demo (dev only): `demo@routely.app` / `DemoPass123!`
-
-```bash
-npm test
-npm run build
-```
-
-## Docker (production)
+## Docker
 
 ```bash
 export ENCRYPTION_KEY=$(openssl rand -hex 32)
@@ -29,33 +34,6 @@ export AUTH_SECRET=$(openssl rand -hex 32)
 docker compose up --build
 ```
 
-Runtime secrets must be injected — the image does not ship usable vault keys.
-
-Set `TRUST_PROXY=1` only behind a reverse proxy that strips client-supplied `X-Forwarded-For`.
-
 ## Stack
 
-Next.js · Prisma/SQLite · AES-256-GCM token vault · bcrypt · JWT sessions · Zod
-
-## API
-
-| Method | Path | Purpose |
-|---|---|---|
-| POST | `/api/auth/register` | Create vault |
-| POST | `/api/auth/login` | Sign in |
-| GET/POST | `/api/cards` | Cards |
-| GET/POST | `/api/rules` | Rules |
-| GET/PATCH | `/api/proxy` | Proxy status |
-| POST | `/api/route` | Preview or authorize |
-| GET | `/api/transactions` | Activity |
-| PATCH | `/api/transactions/:id` | Settle / reverse |
-| GET/PATCH/DELETE | `/api/account` | Account |
-| GET | `/api/health` | Health |
-
-## Production checklist
-
-1. Unique `ENCRYPTION_KEY` and `AUTH_SECRET` (never Dockerfile/build placeholders)
-2. Managed Postgres for multi-instance (swap Prisma provider)
-3. TLS at the edge; set `TRUST_PROXY=1` only then
-4. Do not run `db:seed` in production unless `ALLOW_SEED=1`
-5. Swap simulated tokens for Stripe Issuing / network tokenization for real cards
+Next.js · Prisma · AES-256-GCM vault · bcrypt sessions · merchant catalog · rewards router

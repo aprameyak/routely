@@ -22,6 +22,7 @@ model User {
   auditLogs      AuditLog[]
   sessions       Session[]
   idempotencyKeys IdempotencyKey[]
+  decisions      Decision[]
   defaultCardId  String?
 }
 
@@ -63,6 +64,7 @@ model Card {
   user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   rewards          RewardRate[]
   transactions     Transaction[]
+  decisions        Decision[]
   forcedByRules    Rule[]        @relation("ForceCard")
   preferredByRules Rule[]        @relation("PreferCard")
   excludedByRules  Rule[]        @relation("ExcludeCard")
@@ -186,4 +188,29 @@ model AuditLog {
 
   @@index([userId, createdAt])
   @@index([action])
+}
+
+model Decision {
+  id               String   @id @default(cuid())
+  userId           String
+  merchant         String
+  category         String
+  amountCents      Int?
+  isOnline         Boolean  @default(false)
+  cardId           String?
+  cardNickname     String?
+  cardLast4        String?
+  cardBrand        String?
+  cardColor        String?
+  multiplierUsed   Float    @default(1)
+  rewardsEstimated Float    @default(0)
+  routingReason    String
+  routingDetail    String   @default("{}")
+  createdAt        DateTime @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card Card? @relation(fields: [cardId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([userId, merchant])
 }
