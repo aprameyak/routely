@@ -1,0 +1,18 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: file:./data/prod.db
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      AUTH_SECRET: ${AUTH_SECRET}
+      NEXT_PUBLIC_APP_NAME: Routely
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    volumes:
+      - routely-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  routely-data:
