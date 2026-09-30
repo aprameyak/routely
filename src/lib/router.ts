@@ -158,8 +158,8 @@ export function routePayment(cards: CardWithRewards[], rules: Rule[], ctx: Route
     const active = cards.filter((c) => {
         if (!c.isActive)
             return false;
-        const exp = new Date(c.expiryYear, c.expiryMonth);
-        return exp >= new Date(at.getFullYear(), at.getMonth());
+        const expiresEnd = new Date(c.expiryYear, c.expiryMonth, 0, 23, 59, 59, 999);
+        return at <= expiresEnd;
     });
     if (active.length === 0) {
         return {

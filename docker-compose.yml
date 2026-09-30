@@ -6,13 +6,20 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: file:./data/prod.db
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-      AUTH_SECRET: ${AUTH_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?set ENCRYPTION_KEY with openssl rand -hex 32}
+      AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET with openssl rand -hex 32}
+      TRUST_PROXY: ${TRUST_PROXY:-0}
       NEXT_PUBLIC_APP_NAME: Routely
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
     volumes:
       - routely-data:/app/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
 volumes:
   routely-data:

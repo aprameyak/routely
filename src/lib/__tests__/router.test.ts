@@ -158,6 +158,44 @@ describe("routePayment", () => {
         const d = routePayment([{ ...flex, isActive: false }, cash], [], { amountCents: 4000, merchant: "Shell", category: "gas", isOnline: false });
         expect(d.selectedCard?.id).toBe("cash");
     });
+    it("treats expiryMonth as calendar month end (1-12)", () => {
+        const expired = card({
+            id: "old",
+            nickname: "Expired",
+            expiryMonth: 3,
+            expiryYear: 2024,
+            rewards: [
+                { id: "x", cardId: "old", category: "other", multiplier: 10, capCents: null, isRotating: false, validFrom: null, validTo: null, note: null },
+            ],
+        });
+        const d = routePayment([expired, cash], [], {
+            amountCents: 1000,
+            merchant: "Store",
+            category: "other",
+            isOnline: true,
+            at: new Date(2024, 3, 1),
+        });
+        expect(d.selectedCard?.id).toBe("cash");
+    });
+    it("keeps card valid through last day of expiry month", () => {
+        const march = card({
+            id: "march",
+            nickname: "March Card",
+            expiryMonth: 3,
+            expiryYear: 2024,
+            rewards: [
+                { id: "x", cardId: "march", category: "other", multiplier: 10, capCents: null, isRotating: false, validFrom: null, validTo: null, note: null },
+            ],
+        });
+        const d = routePayment([march], [], {
+            amountCents: 1000,
+            merchant: "Store",
+            category: "other",
+            isOnline: true,
+            at: new Date(2024, 2, 31, 12, 0, 0),
+        });
+        expect(d.selectedCard?.id).toBe("march");
+    });
 });
 describe("activeMultiplier", () => {
     it("reports rotating note", () => {

@@ -18,6 +18,9 @@ function encrypt(plaintext: string) {
     };
 }
 async function main() {
+    if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "1") {
+        throw new Error("Refusing to seed in production without ALLOW_SEED=1");
+    }
     console.log("Seeding Routely demo data…");
     await prisma.auditLog.deleteMany();
     await prisma.transaction.deleteMany();
