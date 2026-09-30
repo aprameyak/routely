@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { getSessionUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-
 export default async function HomePage() {
-  const user = await getSessionUser();
-  if (user) redirect("/decide");
-
-  return (
-    <div className="relative min-h-screen overflow-hidden grid-noise">
+    const user = await getSessionUser();
+    if (user)
+        redirect("/decide");
+    return (<div className="relative min-h-screen overflow-hidden grid-noise">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-teal/20 blur-3xl" />
-        <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-amber/10 blur-3xl" />
+        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-teal/20 blur-3xl"/>
+        <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-amber/10 blur-3xl"/>
       </div>
 
       <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
@@ -19,10 +17,7 @@ export default async function HomePage() {
           <Link href="/login" className="text-sm text-mist hover:text-foam">
             Sign in
           </Link>
-          <Link
-            href="/register"
-            className="rounded-full bg-teal px-4 py-2 text-sm font-medium text-ink hover:bg-mist transition"
-          >
+          <Link href="/register" className="rounded-full bg-teal px-4 py-2 text-sm font-medium text-ink hover:bg-mist transition">
             Get started
           </Link>
         </div>
@@ -38,16 +33,10 @@ export default async function HomePage() {
             exactly which one to pull — maximizing rewards, respecting your rules.
           </p>
           <div className="mt-8 flex flex-wrap gap-3 animate-rise-delay">
-            <Link
-              href="/register"
-              className="rounded-2xl bg-teal px-5 py-3 text-sm font-semibold text-ink hover:bg-mist transition"
-            >
+            <Link href="/register" className="rounded-2xl bg-teal px-5 py-3 text-sm font-semibold text-ink hover:bg-mist transition">
               Stop guessing
             </Link>
-            <Link
-              href="/login"
-              className="rounded-2xl border border-line px-5 py-3 text-sm text-foam hover:bg-white/5 transition"
-            >
+            <Link href="/login" className="rounded-2xl border border-line px-5 py-3 text-sm text-foam hover:bg-white/5 transition">
               Try the demo
             </Link>
           </div>
@@ -56,25 +45,22 @@ export default async function HomePage() {
         <div className="mt-16 grid gap-4 md:grid-cols-3 animate-rise-delay-2">
           {[
             {
-              title: "Ask in 2 seconds",
-              body: "Whole Foods. Shell. Amazon. Open Routely, type where you’re paying, get the card.",
+                title: "Ask in 2 seconds",
+                body: "Whole Foods. Shell. Amazon. Open Routely, type where you’re paying, get the card.",
             },
             {
-              title: "Your rewards, your rules",
-              body: "We score every card for that merchant. Custom rules always win when you want them to.",
+                title: "Your rewards, your rules",
+                body: "We score every card for that merchant. Custom rules always win when you want them to.",
             },
             {
-              title: "Build the habit",
-              body: "Recent merchants stay one tap away. Never re-think the same grocery run again.",
+                title: "Build the habit",
+                body: "Recent merchants stay one tap away. Never re-think the same grocery run again.",
             },
-          ].map((item) => (
-            <div key={item.title} className="glass rounded-3xl p-5">
+        ].map((item) => (<div key={item.title} className="glass rounded-3xl p-5">
               <div className="text-teal text-sm font-medium">{item.title}</div>
               <p className="mt-2 text-sm text-muted leading-relaxed">{item.body}</p>
-            </div>
-          ))}
+            </div>))}
         </div>
       </main>
-    </div>
-  );
+    </div>);
 }
