@@ -1,19 +1,17 @@
 # Routely
 
-Intelligent credit-card proxy that routes each purchase to the right card.
+One proxy card. Each charge routes to the funding card that fits the purchase (rewards, caps, rules).
 
-One proxy card. Every charge routes to the right funding card.
+## Status
 
-## Spec coverage
-
-| Requirement | Status |
+| Area | Notes |
 |---|---|
-| Intelligent proxy over multiple cards | Yes — one Routely card fronts the vault |
-| Maximize rewards by scenario | Yes — router scores categories + caps |
-| Custom rules | Yes — force / prefer / exclude |
-| Safe / prod-ready patterns | Yes — encrypted secrets, sessions, audits, rate limits |
-| Digital wallet (Apple / Google) | UX + provisioning state; live NFC needs issuing bank / Stripe Issuing |
-| Abstract choosing at checkout | Yes — pay with Routely; routing is automatic |
+| Proxy over multiple cards | One Routely card in front of the vault |
+| Reward routing | Scores categories and caps |
+| Custom rules | Force / prefer / exclude |
+| App security | Encrypted secrets, sessions, audits, rate limits |
+| Apple / Google Pay | UX + provisioning state; live NFC needs an issuer or Stripe Issuing |
+| Checkout | Pay with Routely; routing is automatic |
 
 ## Quick start
 
@@ -24,22 +22,20 @@ npm run db:setup
 npm run dev
 ```
 
-**Local seed account:** `demo@routely.app` / `DemoPass123!` → **Proxy card** wallet.
+Seed account (local only): `demo@routely.app` / `DemoPass123!`
 
-Simulate a wallet tap with “Tap to pay” on `/wallet`.
+Simulate a tap with **Tap to pay** on `/wallet`.
 
-### Stripe Issuing (optional)
+Optional Stripe Issuing:
 
-```bash
+```
 ISSUING_PROVIDER=stripe
 STRIPE_SECRET_KEY=sk_test_...
 ```
 
-Then re-issue by deleting the proxy row or creating a new user.
+## Limits
 
-## Honest limit
-
-Apple Pay NFC over a live network BIN requires a licensed issuer. This repo is the full product + simulated issuing, with a Stripe Issuing adapter for the production path.
+Live Apple Pay over a network BIN needs a licensed issuer. This repo includes the product UI plus simulated issuing, and a Stripe Issuing adapter for a real path.
 
 ## License
 
