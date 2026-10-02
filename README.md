@@ -1,5 +1,7 @@
 # Routely
 
+Intelligent credit-card proxy that routes each purchase to the right card.
+
 One proxy card. Every charge routes to the right funding card.
 
 ## Spec coverage
@@ -22,7 +24,7 @@ npm run db:setup
 npm run dev
 ```
 
-Demo: `demo@routely.app` / `DemoPass123!` → **Proxy card** wallet.
+**Local seed account:** `demo@routely.app` / `DemoPass123!` → **Proxy card** wallet.
 
 Simulate a wallet tap with “Tap to pay” on `/wallet`.
 
@@ -38,3 +40,7 @@ Then re-issue by deleting the proxy row or creating a new user.
 ## Honest limit
 
 Apple Pay NFC over a live network BIN requires a licensed issuer. This repo is the full product + simulated issuing, with a Stripe Issuing adapter for the production path.
+
+## License
+
+MIT

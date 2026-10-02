@@ -1,7 +1,9 @@
 {
-  "name": "wallet-app",
+  "name": "routely",
   "version": "0.1.0",
   "private": true,
+  "description": "Intelligent credit-card proxy that routes each purchase to the right card",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
