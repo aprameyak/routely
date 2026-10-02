@@ -138,7 +138,7 @@ export default function WalletPage() {
       <PageHeader
         eyebrow="Your proxy card"
         title="One card. Every purchase routed."
-        description="Add Routely to Apple Wallet / Google Wallet. When you pay with it, we authorize against the best underlying card automatically."
+        description="Simulated wallet provisioning for demos. Live Apple/Google Wallet needs an issuing partner or Stripe Issuing."
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
