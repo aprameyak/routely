@@ -7,6 +7,8 @@ const WEAK_ENCRYPTION_KEYS = new Set([
     "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
     "0".repeat(64),
     "0000000000000000000000000000000000000000000000000000000000000000",
+    // Build/CI placeholder — never reuse at runtime
+    "f".repeat(64),
 ]);
 function requireEnv(name: string, minLen = 1): string {
     const value = process.env[name];

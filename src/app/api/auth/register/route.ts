@@ -2,7 +2,7 @@ import { createSession, hashPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { clientIp, handleApiError, jsonCreated, jsonError } from "@/lib/api";
 import { prisma } from "@/lib/db";
-import { ensureProxyCard } from "@/lib/cards";
+import { ensureProxyCard } from "@/lib/proxy";
 import { registerSchema } from "@/lib/validators";
 import { rateLimit } from "@/lib/rate-limit";
 export async function POST(req: Request) {

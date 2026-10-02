@@ -93,7 +93,7 @@ export function AppShell({
               </button>
             </div>
             <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-              {NAV.slice(0, 5).map((item) => {
+              {NAV.map((item) => {
                 const active = pathname === item.href;
                 return (
                   <Link

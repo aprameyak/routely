@@ -4,7 +4,7 @@ import { prisma } from "./db";
 import { categoryFromMcc, type CategoryId } from "./categories";
 import { resolveMerchant } from "./merchants";
 import { routePayment, type RouteDecision } from "./router";
-import { ensureProxyCard } from "./cards";
+import { ensureProxyCard } from "./proxy";
 export type PayInput = {
     userId: string;
     amountCents: number;

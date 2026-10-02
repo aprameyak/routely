@@ -11,7 +11,6 @@ export const CATEGORIES = [
     { id: "other", label: "Everything else", mccs: ["0000"] },
 ] as const;
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
-export const CATEGORY_IDS = CATEGORIES.map((c) => c.id) as CategoryId[];
 export function categoryFromMcc(mcc?: string | null): CategoryId {
     if (!mcc)
         return "other";
@@ -20,9 +19,6 @@ export function categoryFromMcc(mcc?: string | null): CategoryId {
             return cat.id;
     }
     return "other";
-}
-export function labelForCategory(id: string): string {
-    return CATEGORIES.find((c) => c.id === id)?.label ?? id;
 }
 export const CARD_BRANDS = ["visa", "mastercard", "amex", "discover"] as const;
 export type CardBrand = (typeof CARD_BRANDS)[number];
