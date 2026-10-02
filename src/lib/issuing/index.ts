@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { issueSimulatedCard, type IssuedCardMaterial, panLast4, panPrefix } from "./material";
+import { issueSimulatedCard, type IssuedCardMaterial } from "./material";
 
 function stripeClient(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -64,4 +64,3 @@ export async function issueProxyCardMaterial(input: {
   };
 }
 
-export { panLast4, panPrefix };

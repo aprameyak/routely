@@ -102,7 +102,7 @@ export async function deleteCard(userId: string, cardId: string) {
     await prisma.card.delete({ where: { id: cardId } });
     return true;
 }
-export { ensureProxyCard, setProxyStatus } from "./proxy";
+export { ensureProxyCard } from "./proxy";
 export function sanitizeCard<T extends {
     tokenCipher?: string;
     tokenIv?: string;

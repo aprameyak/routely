@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button, PageHeader, Panel, inputClass } from "@/components/ui";
 import { formatMoney, formatPoints, cn } from "@/lib/utils";
-import { Check, CreditCard, Eye, EyeOff, Snowflake, Wallet } from "lucide-react";
+import { CreditCard, Eye, EyeOff, Snowflake, Wallet } from "lucide-react";
 
 type Proxy = {
   id: string;
@@ -228,24 +228,16 @@ export default function WalletPage() {
           {error ? <p className="text-sm text-rose">{error}</p> : null}
 
           <Panel className="!p-4 text-sm text-muted leading-relaxed">
-            <div className="flex items-center gap-2 text-foam font-medium mb-2">
-              <Check size={16} className="text-teal" /> How this matches your spec
-            </div>
-            You pay with <span className="text-foam">one Routely card</span> (wallet or online). Each
-            authorization hits our router, which picks the best funding card for rewards/rules and
-            books the charge there. Issuer mode:{" "}
-            <span className="text-teal">{proxy.issuerProvider}</span>. Live Apple Pay NFC requires an
-            issuing bank; this build is the complete product path including Stripe Issuing when
-            configured.
+            Issuer: <span className="text-teal">{proxy.issuerProvider}</span>. Live Apple/Google Pay
+            needs a licensed issuer; simulated mode covers the full routing path locally.
           </Panel>
         </div>
 
         <div className="space-y-4 animate-rise-delay">
           <Panel className="!p-4 space-y-3">
-            <div className="text-sm font-semibold">Tap to pay (simulate POS / wallet charge)</div>
+            <div className="text-sm font-semibold">Simulate a charge</div>
             <p className="text-xs text-muted">
-              Same path a wallet authorization would hit: proxy charge → intelligent route → funding
-              card.
+              Hits the same authorize path as a wallet auth: proxy → route → funding card.
             </p>
             <div className="grid gap-2">
               {DEMO_CHARGES.map((c) => (

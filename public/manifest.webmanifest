@@ -1,7 +1,7 @@
 {
   "name": "Routely",
   "short_name": "Routely",
-  "description": "One proxy card. Every charge routes to the best rewards card.",
+  "description": "One proxy card. Each charge routes to the right funding card.",
   "start_url": "/wallet",
   "scope": "/",
   "display": "standalone",

@@ -42,7 +42,3 @@ export function clientIp(req: Request): string | undefined {
     }
     return undefined;
 }
-export function rateLimitKey(prefix: string, req: Request, userId?: string): string {
-    const ip = clientIp(req) ?? "direct";
-    return userId ? `${prefix}:${userId}:${ip}` : `${prefix}:${ip}`;
-}

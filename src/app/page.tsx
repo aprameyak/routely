@@ -52,28 +52,6 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-
-        <div className="mt-16 grid gap-4 md:grid-cols-3 animate-rise-delay-2">
-          {[
-            {
-              title: "One card in wallet",
-              body: "Add Routely once. Pay everywhere. Underlying cards stay in your vault as funding sources.",
-            },
-            {
-              title: "Auto-route on auth",
-              body: "Each authorization scores rewards, applies your rules, and books against the winning card.",
-            },
-            {
-              title: "Issuer-ready",
-              body: "Runs in secure simulated mode today. Flip on Stripe Issuing for live virtual cards en route to Apple Pay.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="glass rounded-3xl p-5">
-              <div className="text-teal text-sm font-medium">{item.title}</div>
-              <p className="mt-2 text-sm text-muted leading-relaxed">{item.body}</p>
-            </div>
-          ))}
-        </div>
       </main>
     </div>
   );

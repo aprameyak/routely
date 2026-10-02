@@ -1,5 +1,5 @@
-import { createHash, randomInt } from "crypto";
-import { encrypt, decrypt, type EncryptedPayload } from "../crypto";
+import { randomInt } from "crypto";
+import { encrypt, type EncryptedPayload } from "../crypto";
 
 function luhnCheckDigit(partial: string): number {
   let sum = 0;
@@ -43,14 +43,6 @@ export function panPrefix(pan: string): string {
 
 export function encryptSecret(value: string): EncryptedPayload {
   return encrypt(value);
-}
-
-export function decryptSecret(payload: EncryptedPayload): string {
-  return decrypt(payload);
-}
-
-export function fingerprintPan(pan: string): string {
-  return createHash("sha256").update(pan).digest("hex").slice(0, 16);
 }
 
 export type IssuedCardMaterial = {

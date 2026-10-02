@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes, timingSafeEqual } from "crypto";
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
 import { env } from "./env";
 const ALGO = "aes-256-gcm";
 function getKey(): Buffer {
@@ -35,16 +35,6 @@ export function decrypt(payload: EncryptedPayload): string {
 }
 export function hashIdentifier(value: string): string {
     return createHash("sha256").update(value).digest("hex");
-}
-export function safeEqual(a: string, b: string): boolean {
-    const ba = Buffer.from(a);
-    const bb = Buffer.from(b);
-    if (ba.length !== bb.length)
-        return false;
-    return timingSafeEqual(ba, bb);
-}
-export function generateVirtualLast4(): string {
-    return String(Math.floor(1000 + Math.random() * 9000));
 }
 export function createPaymentToken(brand: string, last4: string): string {
     const nonce = randomBytes(16).toString("hex");
