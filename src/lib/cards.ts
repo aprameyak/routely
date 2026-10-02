@@ -108,6 +108,13 @@ export function sanitizeCard<T extends {
     tokenIv?: string;
     tokenTag?: string;
 }>(card: T) {
-    const { tokenCipher: _c, tokenIv: _i, tokenTag: _t, ...safe } = card;
-    return safe;
+    const copy = { ...card } as T & {
+      tokenCipher?: string;
+      tokenIv?: string;
+      tokenTag?: string;
+    };
+    delete copy.tokenCipher;
+    delete copy.tokenIv;
+    delete copy.tokenTag;
+    return copy;
 }
