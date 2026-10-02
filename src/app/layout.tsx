@@ -36,7 +36,9 @@ export const viewport: Viewport = {
     maximumScale: 1,
     userScalable: false,
 };
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+    children,
+}: Readonly<{ children: React.ReactNode }>) {
     return (<html lang="en" className={`${sora.variable} ${ibm.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col text-foam">{children}</body>
     </html>);
