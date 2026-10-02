@@ -137,8 +137,8 @@ export default function WalletPage() {
     <div className="mx-auto max-w-3xl">
       <PageHeader
         eyebrow="Your proxy card"
-        title="One card. Every purchase routed."
-        description="Simulated wallet provisioning for demos. Live Apple/Google Wallet needs an issuing partner or Stripe Issuing."
+        title="Proxy card"
+        description="Wallet provisioning is simulated unless Stripe Issuing is configured."
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">

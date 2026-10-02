@@ -13,7 +13,7 @@ const ibm = IBM_Plex_Mono({
 });
 export const metadata: Metadata = {
     title: "Routely — One proxy card",
-    description: "Pay with one Routely card. Every charge routes to the funding card that maximizes your rewards.",
+    description: "Proxy card that routes each charge to the right funding card.",
     applicationName: "Routely",
     manifest: "/manifest.webmanifest",
     appleWebApp: {

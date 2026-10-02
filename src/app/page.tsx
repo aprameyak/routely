@@ -34,8 +34,8 @@ export default async function HomePage() {
             Routely
           </h1>
           <p className="mt-6 max-w-xl text-lg md:text-xl text-mist/90 leading-relaxed">
-            One proxy card for Apple Wallet and checkout. Every charge routes to the funding card
-            that maximizes your rewards — or follows your rules. You never choose at the terminal.
+            One proxy card. Each charge routes to the funding card that fits —
+            rewards, caps, or your rules.
           </p>
           <div className="mt-8 flex flex-wrap gap-3 animate-rise-delay">
             <Link
