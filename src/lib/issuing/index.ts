@@ -17,6 +17,7 @@ export async function issueProxyCardMaterial(input: {
   userId: string;
   email: string;
   name: string;
+  billingAddress?: Stripe.Issuing.CardholderCreateParams.Billing.Address;
 }): Promise<IssuedCardMaterial> {
   if (issuingMode() !== "stripe") {
     return issueSimulatedCard();
@@ -25,19 +26,17 @@ export async function issueProxyCardMaterial(input: {
   const stripe = stripeClient();
   if (!stripe) return issueSimulatedCard();
 
+  if (!input.billingAddress) {
+    throw new Error("A billing address is required to issue a Stripe Issuing card");
+  }
+
   const cardholder = await stripe.issuing.cardholders.create({
     name: input.name,
     email: input.email,
     status: "active",
     type: "individual",
     billing: {
-      address: {
-        line1: "510 Townsend St",
-        city: "San Francisco",
-        state: "CA",
-        country: "US",
-        postal_code: "94103",
-      },
+      address: input.billingAddress,
     },
     metadata: { routelyUserId: input.userId },
   });
