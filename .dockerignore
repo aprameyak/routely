@@ -20,4 +20,3 @@ Dockerfile
 docker-compose.yml
 .editorconfig
 LICENSE
-optimizer

@@ -105,10 +105,6 @@ Using a card in real Apple Pay or Google Pay needs a licensed issuer, which this
 
 Tests for the router, merchant matching, and issuing live in `src/lib/__tests__/` and `src/lib/issuing/`.
 
-## Card optimizer
-
-`optimizer/` holds a separate Next.js app (formerly credit-card-arsenal) that recommends which card to use per spending category, based on a wallet stored in the browser. It is not part of the Routely app and has its own `package.json`. Run it with `cd optimizer && npm install && npm run dev`.
-
 ## Contributing
 
 Issues and pull requests are welcome. Before opening a PR, run `npm run lint`, `npm test`, and `npm run typecheck`. CI runs those three checks and `npm run build`.
