@@ -63,6 +63,29 @@ ENCRYPTION_KEY=$(openssl rand -hex 32) AUTH_SECRET=$(openssl rand -hex 32) docke
 
 The SQLite database is kept in the `routely-data` volume. `/api/health` is used as the container health check.
 
+## Usage
+
+The web UI covers everything: add cards at `/cards`, write rules at `/rules`, ask for a recommendation at `/decide`, and run test charges at `/pay`. The same actions are available over the JSON API with a session cookie. Against the seeded demo account:
+
+```bash
+# log in and save the session cookie
+curl -c cookies.txt -H 'Content-Type: application/json' \
+  -d '{"email":"demo@routely.app","password":"DemoPass123!"}' \
+  http://localhost:3000/api/auth/login
+
+# which card should pay for a $85 grocery run?
+curl -b cookies.txt -H 'Content-Type: application/json' \
+  -d '{"merchant":"Whole Foods","amountCents":8500}' \
+  http://localhost:3000/api/recommend
+
+# route a charge through the proxy card without recording it
+curl -b cookies.txt -H 'Content-Type: application/json' \
+  -d '{"merchant":"Shell","amountCents":4200,"dryRun":true}' \
+  http://localhost:3000/api/route
+```
+
+Both endpoints return the selected card and the reason it was picked. `/api/recommend` also lists the runners-up, and `/api/route` returns a score for every card it considered.
+
 ## Issuing modes
 
 - `simulated` (default): `src/lib/issuing/material.ts` generates a test card number and CVC, which are stored encrypted. "Add to Wallet" only records the wallet status in the database. It does not add anything to a real Apple or Google wallet.
