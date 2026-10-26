@@ -84,7 +84,7 @@ export function conditionsMatch(conditions: RuleConditions, ctx: RouteContext): 
 function spendKey(cardId: string, category: string) {
     return `${cardId}:${category}`;
 }
-export function activeMultiplier(card: CardWithRewards, category: string, at: Date, monthlySpendByCardCategory?: Record<string, number>): {
+export function activeMultiplier(card: CardWithRewards, category: string, at: Date, monthlySpendByCardCategory?: Record<string, number>, amountCents?: number): {
     multiplier: number;
     note?: string;
     capped: boolean;
@@ -95,11 +95,13 @@ export function activeMultiplier(card: CardWithRewards, category: string, at: Da
         multiplier: number;
         note?: string;
         capped: boolean;
+        headroom: number | null;
     } | null => {
         if (rate.validFrom && at < rate.validFrom)
             return null;
         if (rate.validTo && at > rate.validTo)
             return null;
+        let headroom: number | null = null;
         if (rate.capCents != null && rate.capCents > 0) {
             const spent = monthlySpendByCardCategory?.[spendKey(card.id, rate.category)] ?? 0;
             if (spent >= rate.capCents) {
@@ -108,6 +110,7 @@ export function activeMultiplier(card: CardWithRewards, category: string, at: Da
             const remaining = rate.capCents - spent;
             if (remaining <= 0)
                 return null;
+            headroom = remaining;
         }
         return {
             multiplier: rate.multiplier,
@@ -117,17 +120,27 @@ export function activeMultiplier(card: CardWithRewards, category: string, at: Da
                     ? `Bonus active (${Math.max(0, rate.capCents - (monthlySpendByCardCategory?.[spendKey(card.id, rate.category)] ?? 0))}¢ headroom)`
                     : undefined,
             capped: false,
+            headroom,
+        };
+    };
+    const blend = (hit: NonNullable<ReturnType<typeof applyCap>>, baseMultiplier: number) => {
+        const { headroom, ...rest } = hit;
+        if (headroom == null || amountCents == null || amountCents <= headroom)
+            return rest;
+        return {
+            ...rest,
+            multiplier: (headroom * rest.multiplier + (amountCents - headroom) * baseMultiplier) / amountCents,
         };
     };
     if (categoryRate) {
         const hit = applyCap(categoryRate);
+        const other = otherRate ? applyCap(otherRate) : null;
         if (hit)
-            return hit;
+            return blend(hit, other?.multiplier ?? 1);
         if (otherRate) {
-            const other = applyCap(otherRate);
             if (other) {
                 return {
-                    ...other,
+                    ...blend(other, 1),
                     note: "Category bonus cap reached — using base rate",
                     capped: true,
                 };
@@ -138,7 +151,7 @@ export function activeMultiplier(card: CardWithRewards, category: string, at: Da
     if (otherRate) {
         const other = applyCap(otherRate);
         if (other)
-            return other;
+            return blend(other, 1);
     }
     return { multiplier: 1, capped: false };
 }
@@ -196,7 +209,7 @@ export function routePayment(cards: CardWithRewards[], rules: Rule[], ctx: Route
         if (wouldExceedLimit(card, amount))
             continue;
         appliedRuleIds.push(rule.id);
-        const { multiplier, note } = activeMultiplier(card, ctx.category, at, spend);
+        const { multiplier, note } = activeMultiplier(card, ctx.category, at, spend, ctx.amountCents);
         const rewards = amount * multiplier;
         return {
             selectedCard: card,
@@ -204,7 +217,7 @@ export function routePayment(cards: CardWithRewards[], rules: Rule[], ctx: Route
             detail: {
                 appliedRuleIds,
                 scores: active.map((c) => {
-                    const m = activeMultiplier(c, ctx.category, at, spend).multiplier;
+                    const m = activeMultiplier(c, ctx.category, at, spend, ctx.amountCents).multiplier;
                     return {
                         cardId: c.id,
                         nickname: c.nickname,
@@ -262,7 +275,7 @@ export function routePayment(cards: CardWithRewards[], rules: Rule[], ctx: Route
         };
     }
     const scored: ScoredCard[] = candidates.map((card) => {
-        const { multiplier, note } = activeMultiplier(card, ctx.category, at, spend);
+        const { multiplier, note } = activeMultiplier(card, ctx.category, at, spend, ctx.amountCents);
         const estimatedRewards = amount * multiplier;
         const util = utilization(card);
         const notes: string[] = [];
@@ -311,7 +324,7 @@ export function routePayment(cards: CardWithRewards[], rules: Rule[], ctx: Route
             .map((c) => ({
             cardId: c.id,
             nickname: c.nickname,
-            multiplier: activeMultiplier(c, ctx.category, at, spend).multiplier,
+            multiplier: activeMultiplier(c, ctx.category, at, spend, ctx.amountCents).multiplier,
             estimatedRewards: 0,
             score: 0,
             excluded: true,

@@ -221,3 +221,46 @@ describe("activeMultiplier", () => {
         expect(r.note).toMatch(/Rotating/);
     });
 });
+describe("reward cap headroom", () => {
+    const capped = card({
+        id: "capped",
+        nickname: "Capped Grocery",
+        rewards: [
+            { id: "c1", cardId: "capped", category: "grocery", multiplier: 4, capCents: 10000, isRotating: false, validFrom: null, validTo: null, note: null },
+            { id: "c2", cardId: "capped", category: "other", multiplier: 1, capCents: null, isRotating: false, validFrom: null, validTo: null, note: null },
+        ],
+    });
+    const flat = card({
+        id: "flat",
+        nickname: "Flat 2x",
+        rewards: [
+            { id: "f1", cardId: "flat", category: "other", multiplier: 2, capCents: null, isRotating: false, validFrom: null, validTo: null, note: null },
+        ],
+    });
+    const ctx = { merchant: "Whole Foods", category: "grocery", isOnline: false };
+    it("applies the full bonus when the charge fits within headroom", () => {
+        const d = routePayment([capped, flat], [], { ...ctx, amountCents: 5000, monthlySpendByCardCategory: { "capped:grocery": 2000 } });
+        expect(d.selectedCard?.id).toBe("capped");
+        expect(d.multiplierUsed).toBe(4);
+        expect(d.rewardsEarned).toBeCloseTo(200);
+    });
+    it("blends bonus and base rate when the charge exceeds headroom", () => {
+        const r = activeMultiplier(capped, "grocery", new Date(), { "capped:grocery": 9000 }, 50000);
+        expect(r.multiplier * 500).toBeCloseTo(10 * 4 + 490 * 1);
+        const d = routePayment([capped], [], { ...ctx, amountCents: 50000, monthlySpendByCardCategory: { "capped:grocery": 9000 } });
+        expect(d.rewardsEarned).toBeCloseTo(530);
+    });
+    it("uses only the base rate when there is no headroom", () => {
+        for (const spent of [10000, 59000]) {
+            const d = routePayment([capped], [], { ...ctx, amountCents: 50000, monthlySpendByCardCategory: { "capped:grocery": spent } });
+            expect(d.multiplierUsed).toBe(1);
+            expect(d.rewardsEarned).toBeCloseTo(500);
+        }
+    });
+    it("picks the flat card once cap math makes it worth more", () => {
+        const d = routePayment([capped, flat], [], { ...ctx, amountCents: 50000, monthlySpendByCardCategory: { "capped:grocery": 9000 } });
+        expect(d.selectedCard?.id).toBe("flat");
+        expect(d.rewardsEarned).toBeCloseTo(1000);
+        expect(d.detail.scores.find((s) => s.cardId === "capped")?.estimatedRewards).toBeCloseTo(530);
+    });
+});
