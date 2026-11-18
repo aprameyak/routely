@@ -290,7 +290,7 @@ export default function DecideClient() {
 
       {answer ? (<div className="mt-5 animate-rise space-y-4">
           {answer.selectedCard ? (<div className="rounded-3xl p-6 text-white shadow-2xl" style={{
-                    background: `linear-gradient(145deg, ${answer.selectedCard.color} 0%, #050505 125%)`,
+                    background: answer.selectedCard.color,
                 }}>
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/70">
                 <CreditCard size={14}/> Pull this card now

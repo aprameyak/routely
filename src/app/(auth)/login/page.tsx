@@ -27,7 +27,7 @@ export default function LoginPage() {
         router.push("/wallet");
         router.refresh();
     }
-    return (<div className="min-h-screen grid-noise flex items-center justify-center px-4 py-12">
+    return (<div className="min-h-screen flex items-center justify-center px-4 py-12">
       <Panel className="w-full max-w-md animate-rise">
         <div className="text-[11px] uppercase tracking-[0.22em] text-teal">Routely</div>
         <h1 className="mt-2 text-2xl font-semibold">Welcome back</h1>

@@ -146,7 +146,7 @@ export default function WalletPage() {
           <div
             className="relative aspect-[1.68/1] w-full overflow-hidden rounded-3xl p-6 text-white shadow-2xl"
             style={{
-              background: "linear-gradient(145deg, #0f766e 0%, #052e2b 55%, #050505 120%)",
+              background: "#0f766e",
             }}
           >
             <div className="flex items-start justify-between">

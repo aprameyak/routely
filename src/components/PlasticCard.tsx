@@ -8,7 +8,7 @@ export function PlasticCard({ nickname, brand, last4, color, subtitle, className
     className?: string;
 }) {
     return (<div className={cn("card-shine relative aspect-[1.68/1] w-full overflow-hidden rounded-3xl p-5 text-white shadow-xl", className)} style={{
-            background: `linear-gradient(145deg, ${color} 0%, #0a0a0a 120%)`,
+            background: color,
         }}>
       <div className="relative z-10 flex h-full flex-col justify-between">
         <div className="flex items-start justify-between">

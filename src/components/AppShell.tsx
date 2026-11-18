@@ -41,7 +41,7 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-screen grid-noise">
+    <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen max-w-7xl gap-0 md:gap-6 px-0 md:px-6 py-0 md:py-6">
         <aside className="hidden md:flex w-60 shrink-0 flex-col glass rounded-3xl p-5">
           <Link href="/wallet" className="mb-8">

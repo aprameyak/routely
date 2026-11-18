@@ -130,7 +130,7 @@ export default function PayPage() {
                 {mode === "preview" ? "Dry run" : "Authorized"} · {decision.strategy}
               </div>
               {decision.selectedCard ? (<div className="rounded-3xl p-4" style={{
-                    background: `linear-gradient(135deg, ${decision.selectedCard.color}, #0a0a0a)`,
+                    background: decision.selectedCard.color,
                 }}>
                   <div className="text-sm text-white/70">Selected card</div>
                   <div className="text-xl font-semibold">

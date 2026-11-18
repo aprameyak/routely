@@ -7,7 +7,7 @@ export default async function HomePage() {
   if (user) redirect("/wallet");
 
   return (
-    <div className="relative min-h-screen overflow-hidden grid-noise">
+    <div className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-teal/20 blur-3xl" />
         <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-amber/10 blur-3xl" />
